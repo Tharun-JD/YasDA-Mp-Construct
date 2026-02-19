@@ -1,0 +1,11 @@
+<svg width="220" height="220" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg">
+  <rect width="220" height="220" rx="30" fill="#0F172A"></rect>
+
+  <!-- Roof -->
+  <polygon points="40,110 110,50 180,110" fill="#F59E0B"></polygon>
+
+  <!-- Buildings -->
+  <rect x="70" y="110" width="20" height="40" fill="#E5E7EB"></rect>
+  <rect x="100" y="95" width="20" height="55" fill="#E5E7EB"></rect>
+  <rect x="130" y="120" width="20" height="30" fill="#E5E7EB"></rect>
+</svg>

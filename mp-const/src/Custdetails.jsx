@@ -19,10 +19,17 @@ function Custdetails({ onClose }) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#eef2ff] px-3 py-4 md:px-6 md:py-6">
       <div className="pointer-events-none absolute inset-0">
-        <span className="animate-float absolute left-[-140px] top-[-100px] size-[320px] rounded-full bg-[#87a9ff]/30 blur-2xl" />
         <span
-          className="animate-float absolute bottom-[-120px] right-[-130px] size-[360px] rounded-full bg-[#8ae5ff]/30 blur-2xl"
-          style={{ animationDelay: '-3s' }}
+          className="animate-bounce absolute left-[-130px] top-[-90px] size-[320px] rounded-full bg-[#65b1ff]/28 blur-2xl"
+          style={{ animationDuration: '2.5s' }}
+        />
+        <span
+          className="animate-bounce absolute right-[-120px] top-[14%] size-[260px] rounded-full bg-[#8cffd5]/25 blur-2xl"
+          style={{ animationDelay: '-1s', animationDuration: '3.3s' }}
+        />
+        <span
+          className="animate-bounce absolute bottom-[-130px] right-[-90px] size-[360px] rounded-full bg-[#8ae5ff]/30 blur-2xl"
+          style={{ animationDelay: '-1.8s', animationDuration: '2.9s' }}
         />
       </div>
 

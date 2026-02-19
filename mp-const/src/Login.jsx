@@ -4,14 +4,17 @@ function Login({ onSignIn }) {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,62,175,0.12),transparent_32%),radial-gradient(circle_at_80%_30%,rgba(240,128,40,0.12),transparent_34%)]" />
         <span className="animate-pulse absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-white/40 to-transparent" />
-        <span className="animate-bounce absolute -left-24 top-24 size-[340px] rounded-full bg-[#9dc3ff]/35 blur-[2px]" />
         <span
-          className="animate-bounce absolute -right-24 -top-16 size-[360px] rounded-full bg-[#ffd8b7]/35 blur-[2px]"
-          style={{ animationDelay: '-2s' }}
+          className="animate-bounce absolute -left-20 top-20 size-[300px] rounded-full bg-[#78a9ff]/35 blur-[2px]"
+          style={{ animationDuration: '2.2s' }}
         />
         <span
-          className="animate-bounce absolute bottom-[-120px] right-[20%] size-[280px] rounded-full bg-[#a9b6ff]/35 blur-[2px]"
-          style={{ animationDelay: '-5s' }}
+          className="animate-bounce absolute -right-20 -top-10 size-[340px] rounded-full bg-[#ffcf9f]/35 blur-[2px]"
+          style={{ animationDelay: '-0.8s', animationDuration: '3s' }}
+        />
+        <span
+          className="animate-bounce absolute bottom-[-110px] right-[16%] size-[260px] rounded-full bg-[#9b8dff]/35 blur-[2px]"
+          style={{ animationDelay: '-1.6s', animationDuration: '2.6s' }}
         />
       </div>
 

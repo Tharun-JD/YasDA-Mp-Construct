@@ -140,6 +140,24 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
     persistLeads(nextLeads)
   }, [selectedLeadId, leadActivities])
 
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (event.target instanceof Element && event.target.closest('[data-dots-menu-root="true"]')) {
+        return
+      }
+      setOpenActionMenuId(null)
+      setCustomerHeaderMenuOpen(false)
+      setFollowUpActionMenuId(null)
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+    document.addEventListener('touchstart', handleOutsideClick)
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+      document.removeEventListener('touchstart', handleOutsideClick)
+    }
+  }, [])
+
   const persistLeads = (nextLeads) => {
     setLeadActivities(nextLeads)
     window.localStorage.setItem(LEAD_ACTIVITY_KEY, JSON.stringify(nextLeads))
@@ -302,14 +320,17 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,62,175,0.12),transparent_32%),radial-gradient(circle_at_80%_30%,rgba(240,128,40,0.12),transparent_34%)]" />
         <span className="animate-pulse absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-white/40 to-transparent" />
-        <span className="animate-bounce absolute -left-24 top-24 size-[340px] rounded-full bg-[#9dc3ff]/35 blur-[2px]" />
         <span
-          className="animate-bounce absolute -right-24 -top-16 size-[360px] rounded-full bg-[#ffd8b7]/35 blur-[2px]"
-          style={{ animationDelay: '-2s' }}
+          className="animate-bounce absolute -left-28 top-28 size-[360px] rounded-full bg-[#77e3ff]/30 blur-[2px]"
+          style={{ animationDuration: '3.4s' }}
         />
         <span
-          className="animate-bounce absolute bottom-[-120px] right-[20%] size-[280px] rounded-full bg-[#a9b6ff]/35 blur-[2px]"
-          style={{ animationDelay: '-5s' }}
+          className="animate-bounce absolute -right-28 -top-20 size-[320px] rounded-full bg-[#b7c4ff]/35 blur-[2px]"
+          style={{ animationDelay: '-1.2s', animationDuration: '2.4s' }}
+        />
+        <span
+          className="animate-bounce absolute bottom-[-130px] right-[10%] size-[300px] rounded-full bg-[#ffc3dd]/32 blur-[2px]"
+          style={{ animationDelay: '-2.1s', animationDuration: '3.1s' }}
         />
       </div>
 
@@ -574,7 +595,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
                       <td className="px-2 py-2.5 align-top">{lead.countStatus}</td>
                       <td className="px-2 py-2.5 align-top">{lead.registeredAt}</td>
                       <td className="px-2 py-2.5 align-top">{lead.leadValidityPeriod}</td>
-                      <td className="relative overflow-visible px-2 py-2.5 text-center align-top">
+                      <td data-dots-menu-root="true" className="relative overflow-visible px-2 py-2.5 text-center align-top">
                         <button
                           type="button"
                           onClick={() => setOpenActionMenuId(openActionMenuId === lead.id ? null : lead.id)}
@@ -624,10 +645,10 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
               <span className="absolute right-10 top-8 size-28 rounded-full bg-amber-100/45 blur-3xl animate-float" style={{ animationDelay: '-3.1s' }} />
             </div>
 
-            <div className="rounded-2xl border border-emerald-200/70 bg-[linear-gradient(150deg,rgba(255,255,255,0.9),rgba(236,253,245,0.84))] px-5 py-4 shadow-[0_24px_58px_-38px_#059669] backdrop-blur-lg">
+            <div className="relative z-[120] overflow-visible rounded-2xl border border-emerald-200/70 bg-[linear-gradient(150deg,rgba(255,255,255,0.9),rgba(236,253,245,0.84))] px-5 py-4 shadow-[0_24px_58px_-38px_#059669] backdrop-blur-lg">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-sora text-[1.5rem] font-semibold text-slate-800">Customer Detail</h2>
-                <div className="relative flex items-center gap-2">
+                <div data-dots-menu-root="true" className="relative z-[80] flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setActiveView('lead-activities')}
@@ -645,23 +666,23 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
                   </button>
 
                   {customerHeaderMenuOpen && (
-                    <div className="absolute right-0 top-10 z-[65] min-w-[12.5rem] overflow-visible rounded-xl border border-slate-200/90 bg-white/95 p-1.5 shadow-[0_24px_45px_-28px_#0f172a] backdrop-blur-md animate-rise">
+                    <div className="animate-rise absolute right-0 top-full z-[200] mt-2 grid w-56 gap-1 rounded-xl border border-slate-200 bg-white p-2 shadow-[0_24px_45px_-28px_#0f172a]">
                       <button
                         type="button"
                         onClick={() => {
                           setCustomerDetailTab('show')
                           setCustomerHeaderMenuOpen(false)
                         }}
-                        className="block w-full whitespace-nowrap rounded-md px-2 py-1.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                        className="block w-full rounded-md bg-white px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                       >
                         Show Details
                       </button>
                       <button
                         type="button"
                         onClick={handleOpenAddFollowUpTab}
-                        className="block w-full whitespace-nowrap rounded-md px-2 py-1.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                        className="block w-full rounded-md bg-white px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                       >
-                        Add Follow Up
+                        Update Follow Up
                       </button>
                     </div>
                   )}
@@ -745,7 +766,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
                         <td className="px-3 py-2">
                           {item.scheduledOn ? new Date(item.scheduledOn).toLocaleString() : '-'}
                         </td>
-                        <td className="relative px-3 py-2">
+                        <td data-dots-menu-root="true" className="relative px-3 py-2">
                           <button
                             type="button"
                             onClick={() => setFollowUpActionMenuId(followUpActionMenuId === item.id ? null : item.id)}
