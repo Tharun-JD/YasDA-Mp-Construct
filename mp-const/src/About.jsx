@@ -298,16 +298,18 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
   })
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#eceff4]">
+    <div className="relative min-h-screen overflow-hidden">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <span className="animate-float absolute -left-24 top-24 size-[320px] rounded-full bg-brand-blue/15 blur-3xl" />
+        <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,62,175,0.12),transparent_32%),radial-gradient(circle_at_80%_30%,rgba(240,128,40,0.12),transparent_34%)]" />
+        <span className="animate-pulse absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-white/40 to-transparent" />
+        <span className="animate-bounce absolute -left-24 top-24 size-[340px] rounded-full bg-[#9dc3ff]/35 blur-[2px]" />
         <span
-          className="animate-float absolute -right-24 bottom-10 size-[300px] rounded-full bg-brand-orange/20 blur-3xl"
-          style={{ animationDelay: '-3s' }}
+          className="animate-bounce absolute -right-24 -top-16 size-[360px] rounded-full bg-[#ffd8b7]/35 blur-[2px]"
+          style={{ animationDelay: '-2s' }}
         />
         <span
-          className="animate-float absolute left-1/3 top-2/3 size-[220px] rounded-full bg-cyan-300/15 blur-3xl"
-          style={{ animationDelay: '-6s' }}
+          className="animate-bounce absolute bottom-[-120px] right-[20%] size-[280px] rounded-full bg-[#a9b6ff]/35 blur-[2px]"
+          style={{ animationDelay: '-5s' }}
         />
       </div>
 
@@ -380,25 +382,20 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
               </div>
             </details>
 
-            <details className="group relative animate-nav-enter" style={{ animationDelay: '480ms' }}>
-              <summary className="rounded-lg border border-slate-200/80 bg-white px-3.5 py-1.5 text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-blue/40 hover:text-brand-blue hover:shadow-md">
-                Welcome
-              </summary>
-              <div className="absolute right-0 top-11 w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
-                <button
-                  type="button"
-                  onClick={onBackToLogin}
-                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-100"
-                >
-                  Log Out
-                </button>
-              </div>
-            </details>
+            <div className="flex items-center gap-2 animate-nav-enter" style={{ animationDelay: '480ms' }}>
+              <button
+                type="button"
+                onClick={() => onBackToLogin?.()}
+                className="rounded-lg border border-rose-200 bg-white px-4 py-1.5 text-sm font-semibold text-rose-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-rose-50 hover:shadow-md"
+              >
+                Log Out
+              </button>
+            </div>
           </nav>
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto w-[94vw] max-w-[1320px] py-8">
+      <main className="relative isolate z-10 mx-auto w-[94vw] max-w-[1320px] py-8">
         {activeView === 'dashboard' && (
           <>
             <section className="hero-shimmer animate-rise overflow-hidden rounded-2xl bg-[linear-gradient(130deg,#3f52c4_0%,#5f62da_40%,#8f47cc_100%)] px-5 py-8 text-center text-white shadow-[0_30px_65px_-35px_#4450c6] md:px-8 md:py-10">
@@ -429,7 +426,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
               </button>
             </section>
 
-            <section className="animate-rise mt-10 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/85 shadow-[0_18px_40px_-35px_#334155] backdrop-blur [animation-delay:160ms]">
+            <section className="animate-rise mt-10 overflow-hidden rounded-2xl border border-[#d8dafe] bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(240,236,255,0.86))] shadow-[0_24px_58px_-38px_#4f46e5] backdrop-blur-lg [animation-delay:160ms]">
               <div className="flex items-center justify-between bg-gradient-to-r from-[#4f5fd6] to-[#9a48d0] px-5 py-3">
                 <h2 className="font-sora text-[1.9rem] text-white">Collaterals</h2>
                 <a href="#" className="nav-link-soft text-[1.02rem] text-white/90 hover:text-white">View All</a>
@@ -445,8 +442,13 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
         )}
 
         {activeView === 'lead-activities' && (
-          <section className="animate-rise overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_16px_40px_-30px_#334155]">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-[#f8f9fc] px-5 py-3">
+          <section className="animate-rise relative isolate overflow-visible rounded-2xl border border-cyan-200/70 bg-[linear-gradient(150deg,rgba(255,255,255,0.9),rgba(224,247,255,0.84))] shadow-[0_24px_58px_-38px_#0891b2] backdrop-blur-lg">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+              <span className="absolute -top-10 left-10 size-36 rounded-full bg-sky-100/45 blur-3xl" />
+              <span className="absolute right-0 top-24 size-28 rounded-full bg-cyan-100/35 blur-3xl animate-float" style={{ animationDelay: '-2.5s' }} />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-cyan-100 bg-[linear-gradient(130deg,rgba(224,247,255,0.75),rgba(255,255,255,0.84))] px-5 py-3">
               <h2 className="font-sora flex items-center gap-2 text-[1.45rem] font-semibold text-slate-800">
                 <span>Lead Activities</span>
               </h2>
@@ -521,7 +523,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
               </div>
             </div>
 
-            <div className="overflow-x-hidden p-4">
+            <div className="relative overflow-x-auto overflow-y-visible p-4">
               <table className="w-full table-fixed text-[13px]">
                 <thead>
                   <tr className="bg-gradient-to-r from-[#5868ea] to-[#9155e6] text-left text-[0.72rem] uppercase tracking-[0.04em] text-white">
@@ -572,7 +574,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
                       <td className="px-2 py-2.5 align-top">{lead.countStatus}</td>
                       <td className="px-2 py-2.5 align-top">{lead.registeredAt}</td>
                       <td className="px-2 py-2.5 align-top">{lead.leadValidityPeriod}</td>
-                      <td className="relative px-2 py-2.5 text-center align-top">
+                      <td className="relative overflow-visible px-2 py-2.5 text-center align-top">
                         <button
                           type="button"
                           onClick={() => setOpenActionMenuId(openActionMenuId === lead.id ? null : lead.id)}
@@ -583,7 +585,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
                         </button>
 
                         {openActionMenuId === lead.id && (
-                          <div className="absolute right-2 top-11 z-20 w-36 rounded-lg border border-slate-200 bg-white p-1.5 text-left shadow-lg animate-rise">
+                          <div className="absolute right-2 top-11 z-20 min-w-[11rem] overflow-visible rounded-lg border border-slate-200 bg-white p-1.5 text-left shadow-lg animate-rise">
                             <button
                               type="button"
                               onClick={() => {
@@ -616,8 +618,13 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
         )}
 
         {activeView === 'customer-detail' && selectedLead && (
-          <section className="animate-rise space-y-5">
-            <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 shadow-[0_16px_40px_-30px_#334155]">
+          <section className="animate-rise relative isolate space-y-5">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+              <span className="absolute -left-8 top-12 size-36 rounded-full bg-emerald-100/45 blur-3xl animate-float" />
+              <span className="absolute right-10 top-8 size-28 rounded-full bg-amber-100/45 blur-3xl animate-float" style={{ animationDelay: '-3.1s' }} />
+            </div>
+
+            <div className="rounded-2xl border border-emerald-200/70 bg-[linear-gradient(150deg,rgba(255,255,255,0.9),rgba(236,253,245,0.84))] px-5 py-4 shadow-[0_24px_58px_-38px_#059669] backdrop-blur-lg">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-sora text-[1.5rem] font-semibold text-slate-800">Customer Detail</h2>
                 <div className="relative flex items-center gap-2">
@@ -638,21 +645,21 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
                   </button>
 
                   {customerHeaderMenuOpen && (
-                    <div className="absolute right-0 top-10 z-20 w-40 rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg animate-rise">
+                    <div className="absolute right-0 top-10 z-[65] min-w-[12.5rem] overflow-visible rounded-xl border border-slate-200/90 bg-white/95 p-1.5 shadow-[0_24px_45px_-28px_#0f172a] backdrop-blur-md animate-rise">
                       <button
                         type="button"
                         onClick={() => {
                           setCustomerDetailTab('show')
                           setCustomerHeaderMenuOpen(false)
                         }}
-                        className="block w-full rounded-md px-2 py-1.5 text-left text-sm text-slate-700 transition hover:bg-slate-100"
+                        className="block w-full whitespace-nowrap rounded-md px-2 py-1.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                       >
-                        Show
+                        Show Details
                       </button>
                       <button
                         type="button"
                         onClick={handleOpenAddFollowUpTab}
-                        className="block w-full rounded-md px-2 py-1.5 text-left text-sm text-slate-700 transition hover:bg-slate-100"
+                        className="block w-full whitespace-nowrap rounded-md px-2 py-1.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
                       >
                         Add Follow Up
                       </button>
@@ -664,7 +671,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
 
             {customerDetailTab === 'show' && (
               <>
-                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_16px_40px_-30px_#334155]">
+                <div className="animate-fade-slide rounded-2xl border border-white/80 bg-white/85 p-5 shadow-[0_22px_48px_-40px_#334155] backdrop-blur-sm">
               <h3 className="font-sora text-xl font-semibold text-slate-800">Customer Detail</h3>
               <div className="mt-3 grid gap-3 text-slate-700 md:grid-cols-2">
                 <p><strong>First Name:</strong> {selectedLead.firstName}</p>
@@ -686,7 +693,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
               </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_16px_40px_-30px_#334155]">
+                <div className="animate-fade-slide rounded-2xl border border-white/80 bg-white/85 p-5 shadow-[0_22px_48px_-40px_#334155] backdrop-blur-sm [animation-delay:90ms]">
               <h3 className="font-sora text-xl font-semibold text-slate-800">Sell Do Lead Site Visit</h3>
               <div className="mt-3 grid gap-3 text-slate-700 md:grid-cols-2">
                 <p><strong>Lead ID:</strong> {selectedLead.sellDoLeadId}</p>
@@ -698,7 +705,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
               </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_16px_40px_-30px_#334155]">
+                <div className="animate-fade-slide rounded-2xl border border-white/80 bg-white/85 p-5 shadow-[0_22px_48px_-40px_#334155] backdrop-blur-sm [animation-delay:140ms]">
               <h3 className="font-sora text-xl font-semibold text-slate-800">Remark from Selldo</h3>
               <div className="mt-3 space-y-2 text-slate-700">
                 <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">Initial lead captured from panel.</p>
@@ -706,7 +713,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
               </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_16px_40px_-30px_#334155]">
+                <div className="animate-fade-slide rounded-2xl border border-white/80 bg-white/85 p-5 shadow-[0_22px_48px_-40px_#334155] backdrop-blur-sm [animation-delay:190ms]">
               <div className="flex items-center justify-between">
                 <h3 className="font-sora text-xl font-semibold text-slate-800">Notes</h3>
                 <div className="rounded-md border border-slate-200 bg-slate-50 p-2 text-slate-600">
@@ -718,7 +725,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
               </div>
                 </div>
 
-                <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_16px_40px_-30px_#334155]">
+                <div className="animate-fade-slide rounded-2xl border border-white/80 bg-white/85 p-5 shadow-[0_22px_48px_-40px_#334155] backdrop-blur-sm [animation-delay:240ms]">
               <h3 className="font-sora text-xl font-semibold text-slate-800">Follow Up</h3>
               <div className="mt-3 overflow-x-auto">
                 <table className="w-full min-w-[640px] border-collapse text-sm">
@@ -748,7 +755,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
                           </button>
 
                           {followUpActionMenuId === item.id && (
-                            <div className="absolute right-0 top-10 z-20 w-48 rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg animate-rise">
+                            <div className="absolute right-0 top-10 z-20 min-w-[14rem] overflow-visible rounded-lg border border-slate-200 bg-white p-1.5 shadow-lg animate-rise">
                               <button
                                 type="button"
                                 onClick={() => handleFollowUpClick(item.id)}
@@ -776,7 +783,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
             )}
 
             {customerDetailTab === 'add-follow-up' && (
-              <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-[0_16px_40px_-30px_#334155]">
+              <div className="animate-fade-slide rounded-2xl border border-white/80 bg-white/85 p-5 shadow-[0_22px_48px_-40px_#334155] backdrop-blur-sm">
                 <h3 className="font-sora text-xl font-semibold text-slate-800">Add Follow Up</h3>
                 <form onSubmit={handleCreateFollowUp} className="mt-3 grid gap-3 md:grid-cols-2">
                   <label className="grid gap-1">

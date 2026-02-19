@@ -18,8 +18,15 @@ function App() {
     window.sessionStorage.setItem(PAGE_KEY, page)
   }, [page])
 
+  const handleLogout = () => {
+    window.sessionStorage.removeItem(PAGE_KEY)
+    window.sessionStorage.removeItem('mp-const-about-view')
+    window.sessionStorage.removeItem('mp-const-about-selected-lead')
+    setPage('login')
+  }
+
   if (page === 'about') {
-    return <About onOpenApplicationForm={() => setPage('custdetails')} onBackToLogin={() => setPage('login')} />
+    return <About onOpenApplicationForm={() => setPage('custdetails')} onBackToLogin={handleLogout} />
   }
 
   if (page === 'custdetails') {
