@@ -1,104 +1,323 @@
-function Field({ label, required = false, placeholder = '', value = '', type = 'text' }) {
-  return (
-    <label className="grid gap-1.5">
-      <span className="text-sm font-semibold text-slate-700">
-        {label}
-        {required ? ' *' : ''}
-      </span>
-      <input
-        type={type}
-        defaultValue={value}
-        placeholder={placeholder}
-        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-[0.98rem] text-slate-700 outline-none transition focus:border-sky-300 focus:ring-3 focus:ring-sky-100"
-      />
-    </label>
-  )
-}
+import { useState } from 'react'
 
 function Custdetails({ onClose }) {
+  const [toastMessage, setToastMessage] = useState('')
+  const [formData, setFormData] = useState({
+    title: '',
+    name: '',
+    phone: '',
+    email: '',
+    altPhone: '',
+    aadhaar: '',
+    pan: '',
+    occupation: '',
+    rera: '',
+    cpCompany: '',
+    gstApplicable: 'no',
+    gstNumber: '',
+    bankName: '',
+    branch: '',
+    accountType: '',
+    ifsc: '',
+    accountHolder: '',
+    accountNumber: '',
+    bankZip: '',
+  })
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const showToast = (message) => {
+    setToastMessage(message)
+    window.setTimeout(() => setToastMessage(''), 2200)
+  }
+
+  const handleSave = () => {
+    showToast('Customer details saved successfully.')
+  }
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#eef2ff] px-3 py-4 md:px-6 md:py-6">
-      <div className="pointer-events-none absolute inset-0">
-        <span
-          className="animate-bounce absolute left-[-130px] top-[-90px] size-[320px] rounded-full bg-[#65b1ff]/28 blur-2xl"
-          style={{ animationDuration: '2.5s' }}
-        />
-        <span
-          className="animate-bounce absolute right-[-120px] top-[14%] size-[260px] rounded-full bg-[#8cffd5]/25 blur-2xl"
-          style={{ animationDelay: '-1s', animationDuration: '3.3s' }}
-        />
-        <span
-          className="animate-bounce absolute bottom-[-130px] right-[-90px] size-[360px] rounded-full bg-[#8ae5ff]/30 blur-2xl"
-          style={{ animationDelay: '-1.8s', animationDuration: '2.9s' }}
-        />
+    <div className="page-bg-shell font-manrope px-3 py-4 md:px-6 md:py-6">
+      <div className="page-bg-orbs">
+        <span className="page-bg-orb-left" />
+        <span className="page-bg-orb-right" />
+        <span className="page-bg-orb-bottom" />
       </div>
 
-      <div className="animate-rise relative mx-auto w-full max-w-[980px] rounded-2xl border border-slate-200 bg-white/95 shadow-[0_32px_60px_-36px_#2e3f77] backdrop-blur">
-        <div className="flex items-center justify-between rounded-t-2xl bg-gradient-to-r from-[#4f67ff] to-[#a157ff] px-4 py-4 md:px-5">
-          <h1 className="font-sora text-2xl font-bold text-white">Edit Application</h1>
+      <div className="animate-rise relative mx-auto w-full max-w-[980px] overflow-hidden rounded-2xl border border-[#c7d2fe] bg-white/95 shadow-[0_35px_70px_-40px_#253eaf] backdrop-blur">
+        <div className="animate-doc-glow flex items-center justify-between bg-gradient-to-r from-[#7a6af2] to-[#9d7af5] px-4 py-4 md:px-5">
+          <h1 className="inline-flex items-center gap-2 text-2xl font-extrabold tracking-[0.01em] text-white">
+            <span>Customer Details</span>
+          </h1>
           <button
             type="button"
             onClick={onClose}
-            className="font-sora rounded-md px-2 py-1 text-xl font-bold text-white/85 transition hover:bg-white/20 hover:text-white"
+            className="grid size-8 place-items-center rounded-md text-2xl font-bold leading-none text-white/90 transition hover:bg-white/20 hover:text-white"
+            aria-label="Close customer detail form"
           >
-            x
+            {'\u00D7'}
           </button>
         </div>
 
-        <form className="space-y-7 p-4 md:p-5" onSubmit={(e) => e.preventDefault()}>
-          <section className="animate-fade-slide space-y-4">
+        <form className="space-y-4 p-4 md:p-5" onSubmit={(e) => e.preventDefault()}>
+          <section className="animate-fade-slide space-y-3">
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Title" placeholder="Title" />
-              <Field label="Name" required value="HOUSEPECKER PROPERTY SERVICE PRIVATE LIMITED" />
-              <Field label="Phone" required value="+917449000454" />
-              <Field label="Email" required value="cp@housepecker.com" type="email" />
-              <Field label="Alternate Number" value="+91 81234 56789" />
-              <Field label="Aadhaar" required value="880568500478" />
-              <Field label="PAN Number" required value="AAHCH2587D" />
-              <Field label="Occupation" />
-              <Field label="RERA Registration Number" value="TN/Agent/0307/2025" />
-              <Field label="CP Company Name/ CP Name" value="600002" />
-            </div>
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Title</span>
+                <select
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                >
+                  <option value="" />
+                  <option value="mr">Mr</option>
+                  <option value="mrs">Mrs</option>
+                  <option value="ms">Ms</option>
+                  <option value="dr">Dr</option>
+                </select>
+              </label>
 
-            <div className="grid gap-4 md:grid-cols-2">
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Name *</span>
+                <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Phone *</span>
+                <input
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Email *</span>
+                <input
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Alternate Number</span>
+                <input
+                  name="altPhone"
+                  value={formData.altPhone}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Aadhaar *</span>
+                <input
+                  name="aadhaar"
+                  value={formData.aadhaar}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">PAN Number *</span>
+                <input
+                  name="pan"
+                  value={formData.pan}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Occupation</span>
+                <input
+                  name="occupation"
+                  value={formData.occupation}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">RERA Registration Number</span>
+                <input
+                  name="rera"
+                  value={formData.rera}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">CP Company Name/ CP Name</span>
+                <input
+                  name="cpCompany"
+                  value={formData.cpCompany}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100"
+                />
+              </label>
+
               <div className="grid gap-1.5">
-                <span className="text-sm font-semibold text-slate-700">IS GST Applicable? *</span>
-                <div className="flex items-center gap-4 rounded-lg border border-slate-300 bg-white px-3 py-2.5">
-                  <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <input type="radio" name="gst" />
+                <span className="text-sm font-semibold text-slate-700">Is GST Applicable? *</span>
+                <div className="flex items-center gap-4 text-sm text-slate-700">
+                  <label className="inline-flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="gstApplicable"
+                      value="yes"
+                      checked={formData.gstApplicable === 'yes'}
+                      onChange={handleChange}
+                      className="accent-violet-500"
+                    />
                     <span>Yes</span>
                   </label>
-                  <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
-                    <input type="radio" name="gst" defaultChecked />
+                  <label className="inline-flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="gstApplicable"
+                      value="no"
+                      checked={formData.gstApplicable === 'no'}
+                      onChange={handleChange}
+                      className="accent-violet-500"
+                    />
                     <span>No</span>
                   </label>
                 </div>
               </div>
-              <Field label="GST Number" placeholder="GSTIN Number" />
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">GST Number</span>
+                <input
+                  name="gstNumber"
+                  value={formData.gstNumber}
+                  onChange={handleChange}
+                  disabled={formData.gstApplicable !== 'yes'}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-violet-300 focus:ring-3 focus:ring-violet-100 disabled:bg-slate-100"
+                />
+              </label>
             </div>
           </section>
 
-          <section className="space-y-4 rounded-xl border border-[#d8e4ff] bg-[#f8fbff] p-3 md:p-4">
-            <div className="rounded-lg bg-gradient-to-r from-[#0859d8] via-[#0f80d3] to-[#16bbda] px-4 py-3">
-              <h2 className="font-sora text-[1.65rem] font-semibold text-white">Bank Details</h2>
+          <section className="animate-fade-slide overflow-hidden rounded-2xl border border-[#c7d2fe] bg-white shadow-[0_16px_36px_-30px_#253eaf]">
+            <div className="bg-gradient-to-r from-[#1f7ed8] to-[#00b8d4] px-4 py-3 text-white">
+              <h2 className="text-lg font-bold">Bank Details</h2>
             </div>
+            <div className="grid gap-4 p-4 md:grid-cols-2">
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Bank Name</span>
+                <input
+                  name="bankName"
+                  value={formData.bankName}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-300 focus:ring-3 focus:ring-cyan-100"
+                />
+              </label>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <Field label="Bank Name" placeholder="Bank Name" />
-              <Field label="Branch" />
-              <Field label="Account Type" placeholder="Please select" />
-              <Field label="IFSC Code" placeholder="eg. ICIC00000" />
-              <Field label="Account Holder's Name" />
-              <Field label="Account Number" placeholder="eg. 00000000" />
-              <Field label="Zip / Pin Code" placeholder="eg. 4110045" />
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Branch</span>
+                <input
+                  name="branch"
+                  value={formData.branch}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-300 focus:ring-3 focus:ring-cyan-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Account Type</span>
+                <select
+                  name="accountType"
+                  value={formData.accountType}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-cyan-300 focus:ring-3 focus:ring-cyan-100"
+                >
+                  <option value="" />
+                  <option value="savings">Savings</option>
+                  <option value="current">Current</option>
+                  <option value="salary">Salary</option>
+                </select>
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">IFSC Code</span>
+                <input
+                  name="ifsc"
+                  value={formData.ifsc}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-300 focus:ring-3 focus:ring-cyan-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Account Holder&apos;s Name</span>
+                <input
+                  name="accountHolder"
+                  value={formData.accountHolder}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-300 focus:ring-3 focus:ring-cyan-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5">
+                <span className="text-sm font-semibold text-slate-700">Account Number</span>
+                <input
+                  name="accountNumber"
+                  value={formData.accountNumber}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-300 focus:ring-3 focus:ring-cyan-100"
+                />
+              </label>
+
+              <label className="grid gap-1.5 md:col-span-2">
+                <span className="text-sm font-semibold text-slate-700">Zip / Pin Code</span>
+                <input
+                  name="bankZip"
+                  value={formData.bankZip}
+                  onChange={handleChange}
+                  className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-cyan-300 focus:ring-3 focus:ring-cyan-100"
+                />
+              </label>
             </div>
           </section>
 
-          <p className="text-[1rem] font-medium text-slate-600">
-            * These bank details will be used for online brokerage disbursement
-          </p>
+          <div className="flex justify-end gap-2 pt-1">
+            <button
+              type="button"
+              onClick={handleSave}
+              className="rounded-lg bg-[#1783c5] px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#0f6fb0]"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Back
+            </button>
+          </div>
         </form>
       </div>
+
+      {toastMessage && (
+        <div className="fixed right-4 top-5 z-[320] rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
+          {toastMessage}
+        </div>
+      )}
     </div>
   )
 }

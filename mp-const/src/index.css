@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -33,6 +33,10 @@
     font-family: 'Sora', sans-serif;
   }
 
+  .font-manrope {
+    font-family: 'Manrope', sans-serif;
+  }
+
   .animate-float {
     animation: float 13s ease-in-out infinite;
   }
@@ -48,9 +52,88 @@
   .animate-nav-enter {
     animation: nav-enter 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+
+  .animate-doc-glow {
+    animation: doc-glow 4.6s ease-in-out infinite;
+  }
 }
 
 @layer components {
+  .page-bg-shell {
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+    isolation: isolate;
+    background: linear-gradient(180deg, #f7f9ff 0%, #f4f7ff 52%, #f5f6fb 100%);
+  }
+
+  .page-bg-shell::before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(110deg, rgb(240 128 40 / 0.08) 0%, transparent 42%);
+  }
+
+  .page-bg-shell::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    left: 35%;
+    right: -12%;
+    bottom: -220px;
+    height: 420px;
+    border-radius: 9999px;
+    z-index: 0;
+    background: radial-gradient(ellipse at center, rgb(125 137 255 / 0.18), transparent 68%);
+  }
+
+  .page-bg-orbs {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .page-bg-orb-left {
+    position: absolute;
+    left: -120px;
+    top: 86px;
+    width: 280px;
+    height: 280px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 40% 40%, rgb(150 184 255 / 0.52), rgb(175 198 255 / 0.2));
+    filter: blur(1px);
+    animation: orb-bounce 1.9s ease-in-out infinite;
+  }
+
+  .page-bg-orb-right {
+    position: absolute;
+    right: -85px;
+    top: 56px;
+    width: 260px;
+    height: 260px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 45% 38%, rgb(255 207 159 / 0.5), rgb(255 205 144 / 0.2));
+    filter: blur(2px);
+    animation: orb-bounce 2.3s ease-in-out infinite;
+    animation-delay: -1s;
+  }
+
+  .page-bg-orb-bottom {
+    position: absolute;
+    right: 14%;
+    bottom: -170px;
+    width: 360px;
+    height: 360px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 50% 40%, rgb(166 177 255 / 0.36), rgb(166 177 255 / 0.1));
+    filter: blur(2px);
+    animation: orb-bounce 2.5s ease-in-out infinite;
+    animation-delay: -1.5s;
+  }
+
   .nav-link-fancy {
     position: relative;
     overflow: hidden;
@@ -205,5 +288,27 @@
   35%,
   100% {
     background-position: 220% 0;
+  }
+}
+
+@keyframes doc-glow {
+  0%,
+  100% {
+    filter: saturate(1);
+  }
+
+  50% {
+    filter: saturate(1.16);
+  }
+}
+
+@keyframes orb-bounce {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, -18px, 0) scale(1.04);
   }
 }

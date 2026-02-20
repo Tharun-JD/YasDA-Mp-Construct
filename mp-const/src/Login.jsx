@@ -1,21 +1,36 @@
+import { useState } from 'react'
+
 function Login({ onSignIn }) {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+  })
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    if (errorMessage) {
+      setErrorMessage('')
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim()) {
+      setErrorMessage('Please enter Name, Email, and Password.')
+      return
+    }
+    onSignIn?.({ name: formData.name.trim(), email: formData.email.trim() })
+  }
+
   return (
-    <div className="relative grid min-h-screen grid-rows-[auto_1fr_auto] overflow-hidden">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,62,175,0.12),transparent_32%),radial-gradient(circle_at_80%_30%,rgba(240,128,40,0.12),transparent_34%)]" />
-        <span className="animate-pulse absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-white/40 to-transparent" />
-        <span
-          className="animate-bounce absolute -left-20 top-20 size-[300px] rounded-full bg-[#78a9ff]/35 blur-[2px]"
-          style={{ animationDuration: '2.2s' }}
-        />
-        <span
-          className="animate-bounce absolute -right-20 -top-10 size-[340px] rounded-full bg-[#ffcf9f]/35 blur-[2px]"
-          style={{ animationDelay: '-0.8s', animationDuration: '3s' }}
-        />
-        <span
-          className="animate-bounce absolute bottom-[-110px] right-[16%] size-[260px] rounded-full bg-[#9b8dff]/35 blur-[2px]"
-          style={{ animationDelay: '-1.6s', animationDuration: '2.6s' }}
-        />
+    <div className="page-bg-shell font-manrope grid grid-rows-[auto_1fr_auto]">
+      <div aria-hidden="true" className="page-bg-orbs">
+        <span className="page-bg-orb-left" />
+        <span className="page-bg-orb-right" />
+        <span className="page-bg-orb-bottom" />
       </div>
 
       <header className="relative z-10 flex items-center justify-between border-b border-slate-200 px-5 py-4 backdrop-blur md:px-14 md:py-5">
@@ -54,7 +69,13 @@ function Login({ onSignIn }) {
             className="pointer-events-none absolute -bottom-16 -right-10 size-44 rounded-full bg-[#ffc997]/35 blur-2xl [animation:float_13s_ease-in-out_infinite]"
             style={{ animationDelay: '-2s' }}
           />
-          <p className="text-[0.98rem] font-bold tracking-[0.03em] text-sky-600">Welcome to MP Developers</p>
+          <p className="inline-flex items-center gap-1.5 text-[0.98rem] font-bold tracking-[0.03em] text-sky-600">
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M4 20a8 8 0 0 1 16 0" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>Welcome to MP Developers</span>
+          </p>
           <h1 className="font-sora mt-2 bg-gradient-to-r from-slate-900 via-brand-blue to-slate-900 bg-clip-text text-[clamp(1.5rem,2.3vw,2rem)] leading-tight font-bold text-transparent">
             Build bold partnerships with confidence.
           </h1>
@@ -62,13 +83,20 @@ function Login({ onSignIn }) {
             We value your partnership and are excited to provide the resources you need for successful collaboration.
           </p>
 
-          <form
-            className="grid gap-2.5"
-            onSubmit={(e) => {
-              e.preventDefault()
-              onSignIn?.()
-            }}
-          >
+          <form className="grid gap-2.5" onSubmit={handleSubmit} autoComplete="off">
+            <label htmlFor="name" className="text-[0.94rem] font-semibold tracking-[0.01em] text-slate-700">
+              Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Name"
+              autoComplete="off"
+              className="w-full rounded-xl border border-slate-200/90 bg-white/90 px-3.5 py-3 text-[0.98rem] shadow-[0_8px_20px_-18px_#1e3a8a] outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+            />
+
             <label htmlFor="email" className="text-[0.94rem] font-semibold tracking-[0.01em] text-slate-700">
               Email
             </label>
@@ -76,7 +104,10 @@ function Login({ onSignIn }) {
               id="email"
               name="email"
               type="email"
+              value={formData.email}
+              onChange={handleChange}
               placeholder="Email"
+              autoComplete="off"
               className="w-full rounded-xl border border-slate-200/90 bg-white/90 px-3.5 py-3 text-[0.98rem] shadow-[0_8px_20px_-18px_#1e3a8a] outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
             />
 
@@ -87,7 +118,10 @@ function Login({ onSignIn }) {
               id="password"
               name="password"
               type="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Password"
+              autoComplete="new-password"
               className="w-full rounded-xl border border-slate-200/90 bg-white/90 px-3.5 py-3 text-[0.98rem] shadow-[0_8px_20px_-18px_#1e3a8a] outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
             />
 
@@ -103,6 +137,8 @@ function Login({ onSignIn }) {
               <span className="pointer-events-none absolute -left-10 top-0 h-full w-8 -skew-x-12 bg-white/35 opacity-0 transition group-hover:left-[110%] group-hover:opacity-100 group-hover:duration-700" />
               Sign In
             </button>
+
+            {errorMessage && <p className="text-sm font-semibold text-rose-600">{errorMessage}</p>}
 
             <div className="mt-3 grid gap-1">
               <a href="#" className="text-[0.95rem] text-brand-blue/80 transition hover:text-brand-blue font-bold">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Addleads from './Addleads'
 
 const LEAD_ACTIVITY_KEY = 'mp-const-lead-activities'
@@ -7,7 +7,13 @@ const LEAD_SELECTED_KEY = 'mp-const-about-selected-lead'
 
 function getInitialLeadView() {
   const savedView = window.sessionStorage.getItem(LEAD_VIEW_KEY)
-  if (savedView === 'lead-activities' || savedView === 'customer-detail') {
+  if (
+    savedView === 'lead-activities' ||
+    savedView === 'customer-detail' ||
+    savedView === 'emails' ||
+    savedView === 'sms' ||
+    savedView === 'update-document'
+  ) {
     return savedView
   }
   return 'dashboard'
@@ -62,7 +68,134 @@ function NoteIcon() {
   )
 }
 
-function About({ onOpenApplicationForm, onBackToLogin }) {
+function LabelIcon({ type, className = 'size-4' }) {
+  const common = { 'aria-hidden': 'true', viewBox: '0 0 24 24', className, fill: 'none', stroke: 'currentColor', strokeWidth: '2' }
+  if (type === 'dashboard') {
+    return (
+      <svg {...common}>
+        <path d="M3 3h8v8H3zM13 3h8v5h-8zM13 10h8v11h-8zM3 13h8v8H3z" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (type === 'activity') {
+    return (
+      <svg {...common}>
+        <path d="M4 12h4l2-5 4 10 2-5h4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (type === 'form') {
+    return (
+      <svg {...common}>
+        <path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (type === 'more') {
+    return (
+      <svg {...common}>
+        <circle cx="6" cy="12" r="1.7" />
+        <circle cx="12" cy="12" r="1.7" />
+        <circle cx="18" cy="12" r="1.7" />
+      </svg>
+    )
+  }
+  if (type === 'welcome') {
+    return (
+      <svg {...common}>
+        <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Z" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M4 20a8 8 0 0 1 16 0" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (type === 'password') {
+    return (
+      <svg {...common}>
+        <path d="M6 11V8a6 6 0 1 1 12 0v3M5 11h14v10H5z" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 15v3" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (type === 'logout') {
+    return (
+      <svg {...common}>
+        <path d="M10 5H6v14h4M14 8l5 4-5 4M19 12h-9" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (type === 'email') {
+    return (
+      <svg {...common}>
+        <path d="M4 6h16v12H4z" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="m4 8 8 6 8-6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (type === 'sms') {
+    return (
+      <svg {...common}>
+        <path d="M4 5h16v11H8l-4 3z" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (type === 'docs') {
+    return (
+      <svg {...common}>
+        <path d="M7 3h7l5 5v13H7zM14 3v5h5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  if (type === 'collaterals') {
+    return (
+      <svg {...common}>
+        <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+  return null
+}
+
+const emailRows = [
+  {
+    id: 1,
+    to: 'mk.bhs97@gmail.com',
+    subject: 'FollowUp Reminder',
+    status: 'Draft',
+    sentOn: '-',
+  },
+  {
+    id: 2,
+    to: 'mk.bhs97@gmail.com',
+    subject: 'New lead has been created i...',
+    status: 'Draft',
+    sentOn: '-',
+  },
+  {
+    id: 3,
+    to: 'cphead@mpdevelopers.com mk.bhs97@gmail.com',
+    subject: 'Account has been approved',
+    status: 'Draft',
+    sentOn: 'Feb 18 2026, 2:42 PM',
+  },
+  {
+    id: 4,
+    to: 'mk.bhs97@gmail.com',
+    subject: 'Confirmation instructions',
+    status: 'Draft',
+    sentOn: 'Feb 18 2026, 11:25 AM',
+  },
+]
+
+const documentTypes = ['PAN Card', 'Aadhaar Card', 'Passport', 'Driving License']
+
+const validDocuments = {
+  'PAN Card': ['PAN Card Scanned Copy'],
+  'Aadhaar Card': ['Aadhaar Front & Back Copy'],
+  Passport: ['Passport Front Page Copy'],
+  'Driving License': ['Driving License Scanned Copy'],
+}
+
+function About({ currentUser, onBackToLogin, onOpenCustdetails, onOpenAddress }) {
   const [isAddLeadOpen, setIsAddLeadOpen] = useState(false)
   const [leadActivities, setLeadActivities] = useState([])
   const [leadsLoaded, setLeadsLoaded] = useState(false)
@@ -77,6 +210,23 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
   const [isFollowUpDrawerOpen, setIsFollowUpDrawerOpen] = useState(false)
   const [editingFollowUpId, setEditingFollowUpId] = useState(null)
   const [toastMessage, setToastMessage] = useState('')
+  const [topMenuOpen, setTopMenuOpen] = useState(null)
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
+  const [selectedDocumentType, setSelectedDocumentType] = useState(documentTypes[0])
+  const [uploadedDocuments, setUploadedDocuments] = useState({})
+  const documentInputRef = useRef(null)
+  const [profileForm, setProfileForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    reraNumber: '',
+    timeZone: 'Asia/Kolkata',
+  })
+  const [passwordForm, setPasswordForm] = useState({
+    newPassword: '',
+    confirmPassword: '',
+  })
   const [followUpForm, setFollowUpForm] = useState({
     subject: '',
     description: '',
@@ -86,6 +236,9 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
   })
 
   const selectedLead = leadActivities.find((lead) => lead.id === selectedLeadId) || null
+  const validForSelectedDocument = validDocuments[selectedDocumentType] || []
+  const welcomeName = currentUser?.name?.trim() || 'Test Company'
+  const welcomeEmail = currentUser?.email?.trim() || ''
 
   useEffect(() => {
     const savedLeads = window.localStorage.getItem(LEAD_ACTIVITY_KEY)
@@ -98,6 +251,17 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
   useEffect(() => {
     window.sessionStorage.setItem(LEAD_VIEW_KEY, activeView)
   }, [activeView])
+
+  useEffect(() => {
+    if (!isProfileModalOpen) return
+    setProfileForm({
+      name: '',
+      email: '',
+      phone: '',
+      reraNumber: '',
+      timeZone: 'Asia/Kolkata',
+    })
+  }, [isProfileModalOpen])
 
   useEffect(() => {
     if (selectedLeadId) {
@@ -141,10 +305,19 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
   }, [selectedLeadId, leadActivities])
 
   useEffect(() => {
+    if (!currentUser?.name) return
+    showToast(`Welcome ${currentUser.name.trim()}. You are signed in.`)
+  }, [currentUser])
+
+  useEffect(() => {
     const handleOutsideClick = (event) => {
+      if (event.target instanceof Element && event.target.closest('[data-top-menu-root="true"]')) {
+        return
+      }
       if (event.target instanceof Element && event.target.closest('[data-dots-menu-root="true"]')) {
         return
       }
+      setTopMenuOpen(null)
       setOpenActionMenuId(null)
       setCustomerHeaderMenuOpen(false)
       setFollowUpActionMenuId(null)
@@ -198,6 +371,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
 
     persistLeads([newLead, ...leadActivities])
     setIsAddLeadOpen(false)
+    showToast('Lead saved successfully.')
   }
 
   const handleAddFollow = (leadId) => {
@@ -307,6 +481,70 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
     showToast('Follow up added successfully.')
   }
 
+  const handleDocumentUpload = (e) => {
+    const files = Array.from(e.target.files ?? [])
+    if (!files.length) {
+      return
+    }
+
+    setUploadedDocuments((prev) => ({
+      ...prev,
+      [selectedDocumentType]: [...(prev[selectedDocumentType] ?? []), ...files],
+    }))
+    e.target.value = ''
+  }
+
+  const handleDeleteDocumentType = (documentType) => {
+    setUploadedDocuments((prev) => {
+      if (!(documentType in prev)) {
+        return prev
+      }
+      const next = { ...prev }
+      delete next[documentType]
+      return next
+    })
+  }
+
+  const handleSaveDocuments = () => {
+    showToast('Documents saved successfully.')
+  }
+
+  const handleProfileFormChange = (e) => {
+    const { name, value } = e.target
+    setProfileForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault()
+    setIsProfileModalOpen(false)
+    showToast('Your profile details are saved.')
+  }
+
+  const handlePasswordFormChange = (e) => {
+    const { name, value } = e.target
+    setPasswordForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleChangePassword = (e) => {
+    e.preventDefault()
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      showToast('Passwords do not match.')
+      return
+    }
+    setIsPasswordModalOpen(false)
+    setPasswordForm({ newPassword: '', confirmPassword: '' })
+    showToast('Password changed successfully.')
+  }
+
+  const closeActiveTab = () => {
+    setActiveView('dashboard')
+    setTopMenuOpen(null)
+    setShowFilterMenu(false)
+    setOpenActionMenuId(null)
+    setCustomerHeaderMenuOpen(false)
+    setFollowUpActionMenuId(null)
+  }
+
   const visibleLeads = leadActivities.filter((lead) => {
     if (activeFilter === 'all') return true
     if (activeFilter === 'fresh') return lead.leadStage === 'Fresh'
@@ -316,25 +554,14 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
   })
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <span className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,62,175,0.12),transparent_32%),radial-gradient(circle_at_80%_30%,rgba(240,128,40,0.12),transparent_34%)]" />
-        <span className="animate-pulse absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-white/40 to-transparent" />
-        <span
-          className="animate-bounce absolute -left-28 top-28 size-[360px] rounded-full bg-[#77e3ff]/30 blur-[2px]"
-          style={{ animationDuration: '3.4s' }}
-        />
-        <span
-          className="animate-bounce absolute -right-28 -top-20 size-[320px] rounded-full bg-[#b7c4ff]/35 blur-[2px]"
-          style={{ animationDelay: '-1.2s', animationDuration: '2.4s' }}
-        />
-        <span
-          className="animate-bounce absolute bottom-[-130px] right-[10%] size-[300px] rounded-full bg-[#ffc3dd]/32 blur-[2px]"
-          style={{ animationDelay: '-2.1s', animationDuration: '3.1s' }}
-        />
+    <div className="page-bg-shell font-manrope">
+      <div aria-hidden="true" className="page-bg-orbs">
+        <span className="page-bg-orb-left" />
+        <span className="page-bg-orb-right" />
+        <span className="page-bg-orb-bottom" />
       </div>
 
-      <header className="relative z-10 border-b border-white/60 bg-white/80 shadow-[0_16px_40px_-34px_#1e293b] backdrop-blur-xl">
+      <header className="relative z-[180] border-b border-white/60 bg-white/80 shadow-[0_16px_40px_-34px_#1e293b] backdrop-blur-xl">
         <div className="mx-auto flex h-18 w-[94vw] max-w-[1320px] items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="font-sora text-3xl font-extrabold tracking-[-0.05em] text-brand-blue">MP</div>
@@ -344,73 +571,184 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
             </div>
           </div>
 
-          <nav className="hidden items-center gap-2 text-[1.02rem] md:flex">
+          <nav className="hidden items-center gap-2 overflow-visible text-[1.02rem] md:flex">
             <button
               type="button"
               onClick={() => {
                 setActiveView('dashboard')
+                setTopMenuOpen(null)
                 setOpenActionMenuId(null)
               }}
               className={`nav-link-fancy animate-nav-enter ${activeView === 'dashboard' ? 'text-brand-blue' : 'text-slate-700'}`}
               style={{ animationDelay: '120ms' }}
             >
-              Dashboard
+              <span className="flex items-center gap-1.5">
+                <LabelIcon type="dashboard" />
+                <span>Dashboard</span>
+              </span>
             </button>
             <button
               type="button"
               onClick={() => {
                 setActiveView('lead-activities')
+                setTopMenuOpen(null)
                 setOpenActionMenuId(null)
               }}
               className={`nav-link-fancy animate-nav-enter ${activeView === 'lead-activities' ? 'text-brand-blue' : 'text-slate-700'}`}
               style={{ animationDelay: '210ms' }}
             >
-              Lead Activities
+              <span className="flex items-center gap-1.5">
+                <LabelIcon type="activity" />
+                <span>Lead Activities</span>
+              </span>
             </button>
 
-            <details className="group relative animate-nav-enter" style={{ animationDelay: '300ms' }}>
-              <summary className="nav-link-fancy flex cursor-pointer list-none items-center gap-1.5 text-slate-700">
-                <span>Application Form</span>
-                <DropdownChevron />
-              </summary>
-              <div className="absolute right-0 top-11 w-52 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
-                <button
-                  type="button"
-                  onClick={onOpenApplicationForm}
-                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-100"
-                >
-                  Open Application
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsAddLeadOpen(true)}
-                  className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-slate-100"
-                >
-                  New Lead Form
-                </button>
-              </div>
-            </details>
-
-            <details className="group relative animate-nav-enter" style={{ animationDelay: '390ms' }}>
-              <summary className="nav-link-fancy flex cursor-pointer list-none items-center gap-1.5 text-slate-700">
-                <span>More</span>
-                <DropdownChevron />
-              </summary>
-              <div className="absolute right-0 top-11 w-48 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
-                <a href="#" className="block rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100">Campaigns</a>
-                <a href="#" className="block rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100">Reports</a>
-                <a href="#" className="block rounded-lg px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-100">Settings</a>
-              </div>
-            </details>
-
-            <div className="flex items-center gap-2 animate-nav-enter" style={{ animationDelay: '480ms' }}>
+            <div data-top-menu-root="true" className="relative animate-nav-enter" style={{ animationDelay: '300ms' }}>
               <button
                 type="button"
-                onClick={() => onBackToLogin?.()}
-                className="rounded-lg border border-rose-200 bg-white px-4 py-1.5 text-sm font-semibold text-rose-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-rose-50 hover:shadow-md"
+                onClick={() => setTopMenuOpen((prev) => (prev === 'application' ? null : 'application'))}
+                className="nav-link-fancy flex items-center gap-1.5 text-slate-700"
+                aria-expanded={topMenuOpen === 'application'}
               >
-                Log Out
+                <LabelIcon type="form" />
+                <span>Application Form</span>
+                <DropdownChevron />
               </button>
+              {topMenuOpen === 'application' && (
+                <div className="animate-rise absolute right-0 top-11 z-[240] w-56 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTopMenuOpen(null)
+                      onOpenCustdetails?.()
+                    }}
+                    className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <LabelIcon type="welcome" className="size-4" />
+                      <span>Customer Details</span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTopMenuOpen(null)
+                      onOpenAddress?.()
+                    }}
+                    className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <LabelIcon type="docs" className="size-4" />
+                      <span>Address</span>
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div data-top-menu-root="true" className="relative animate-nav-enter" style={{ animationDelay: '390ms' }}>
+              <button
+                type="button"
+                onClick={() => setTopMenuOpen((prev) => (prev === 'more' ? null : 'more'))}
+                className="nav-link-fancy flex items-center gap-1.5 text-slate-700"
+                aria-expanded={topMenuOpen === 'more'}
+              >
+                <LabelIcon type="more" />
+                <span>More</span>
+                <DropdownChevron />
+              </button>
+              {topMenuOpen === 'more' && (
+                <div className="animate-rise absolute right-0 top-11 z-[240] w-48 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveView('emails')
+                      setTopMenuOpen(null)
+                      setOpenActionMenuId(null)
+                    }}
+                    className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <LabelIcon type="email" className="size-4" />
+                      <span>Emails</span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveView('sms')
+                      setTopMenuOpen(null)
+                      setOpenActionMenuId(null)
+                    }}
+                    className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <LabelIcon type="sms" className="size-4" />
+                      <span>Sms</span>
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div data-top-menu-root="true" className="relative animate-nav-enter" style={{ animationDelay: '480ms' }}>
+              <button
+                type="button"
+                onClick={() => setTopMenuOpen((prev) => (prev === 'welcome' ? null : 'welcome'))}
+                className="nav-link-fancy flex items-center gap-1.5 text-slate-700"
+                aria-expanded={topMenuOpen === 'welcome'}
+              >
+                <LabelIcon type="welcome" />
+                <span>Welcome, {welcomeName}</span>
+                <DropdownChevron />
+              </button>
+              {topMenuOpen === 'welcome' && (
+                <div className="animate-rise absolute right-0 top-11 z-[240] w-60 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+                  <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-2">
+                    <div className="text-sm font-semibold text-slate-800">{welcomeName}</div>
+                    <div className="text-xs text-slate-600">{welcomeEmail || 'No email on file'}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileModalOpen(true)
+                      setTopMenuOpen(null)
+                    }}
+                    className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <LabelIcon type="welcome" className="size-4" />
+                      <span>Channel Partner Profile</span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsPasswordModalOpen(true)
+                      setTopMenuOpen(null)
+                    }}
+                    className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <LabelIcon type="password" className="size-4" />
+                      <span>Change Password</span>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTopMenuOpen(null)
+                      onBackToLogin?.()
+                    }}
+                    className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-semibold text-rose-600 transition hover:bg-rose-50"
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <LabelIcon type="logout" className="size-4" />
+                      <span>Log Out</span>
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
           </nav>
         </div>
@@ -420,36 +758,47 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
         {activeView === 'dashboard' && (
           <>
             <section className="hero-shimmer animate-rise overflow-hidden rounded-2xl bg-[linear-gradient(130deg,#3f52c4_0%,#5f62da_40%,#8f47cc_100%)] px-5 py-8 text-center text-white shadow-[0_30px_65px_-35px_#4450c6] md:px-8 md:py-10">
-              <h1 className="font-sora text-[clamp(1.8rem,2.6vw,3rem)] font-semibold tracking-[-0.02em]">Welcome (Test Company)</h1>
-              <p className="mt-3 text-[1.45rem] text-white/90">Vendor Code: Test0077</p>
+              <h1 className="font-sora text-[clamp(1.8rem,2.6vw,3rem)] font-semibold tracking-[-0.02em]">
+                Welcome ({welcomeName})
+              </h1>
+              <p className="mt-3 text-[1.45rem] text-white/90">
+                {welcomeEmail ? `Email: ${welcomeEmail}` : 'Vendor Code: Test0077'}
+              </p>
               <p className="mx-auto mt-4 max-w-[840px] text-[1.05rem] leading-relaxed text-white/90 md:text-[1.15rem]">
                 Thank you for being a valued channel partner. We are committed to your success. Together, we will
                 achieve great results in the real estate market.
               </p>
 
               <div className="mt-10 flex flex-wrap items-center justify-center gap-6">
-                <div className="glass-panel hover-lift animate-fade-slide rounded-xl px-10 py-7 text-brand-blue shadow-lg">
+                <button
+                  type="button"
+                  onClick={() => setIsAddLeadOpen(true)}
+                  className="glass-panel hover-lift animate-fade-slide rounded-xl px-10 py-7 text-brand-blue shadow-lg"
+                >
                   <div className="mx-auto mb-2 grid size-10 place-items-center rounded-lg border-2 border-brand-blue/70 text-xl">+</div>
                   <div className="text-[1.02rem] font-medium">Add Leads</div>
-                </div>
-                <div className="glass-panel hover-lift animate-fade-slide rounded-xl px-10 py-7 text-brand-blue shadow-lg [animation-delay:160ms]">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveView('lead-activities')
+                    setTopMenuOpen(null)
+                    setOpenActionMenuId(null)
+                  }}
+                  className="glass-panel hover-lift animate-fade-slide rounded-xl px-10 py-7 text-brand-blue shadow-lg [animation-delay:160ms]"
+                >
                   <div className="mx-auto mb-2 grid size-10 place-items-center rounded-lg border-2 border-brand-blue/70 text-xl">Rs</div>
                   <div className="text-[1.02rem] font-medium">Track Lead Activities</div>
-                </div>
+                </button>
               </div>
-
-              <button
-                type="button"
-                onClick={() => setIsAddLeadOpen(true)}
-                className="mt-8 rounded-lg bg-slate-900/75 px-12 py-2.5 text-[1.35rem] font-semibold text-white shadow-[0_16px_30px_-20px_#020617] transition hover:-translate-y-0.5 hover:bg-slate-900"
-              >
-                Add Lead
-              </button>
             </section>
 
             <section className="animate-rise mt-10 overflow-hidden rounded-2xl border border-[#d8dafe] bg-[linear-gradient(145deg,rgba(255,255,255,0.9),rgba(240,236,255,0.86))] shadow-[0_24px_58px_-38px_#4f46e5] backdrop-blur-lg [animation-delay:160ms]">
               <div className="flex items-center justify-between bg-gradient-to-r from-[#4f5fd6] to-[#9a48d0] px-5 py-3">
-                <h2 className="font-sora text-[1.9rem] text-white">Collaterals</h2>
+                <h2 className="font-sora inline-flex items-center gap-2 text-[1.9rem] text-white">
+                  <LabelIcon type="collaterals" className="size-6" />
+                  <span>Collaterals</span>
+                </h2>
                 <a href="#" className="nav-link-soft text-[1.02rem] text-white/90 hover:text-white">View All</a>
               </div>
               <div className="p-4">
@@ -463,14 +812,15 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
         )}
 
         {activeView === 'lead-activities' && (
-          <section className="animate-rise relative isolate overflow-visible rounded-2xl border border-cyan-200/70 bg-[linear-gradient(150deg,rgba(255,255,255,0.9),rgba(224,247,255,0.84))] shadow-[0_24px_58px_-38px_#0891b2] backdrop-blur-lg">
+          <section className="animate-rise relative isolate overflow-visible rounded-2xl border border-[#c7d2fe] bg-[linear-gradient(150deg,rgba(255,255,255,0.9),rgba(237,242,255,0.88))] shadow-[0_24px_58px_-38px_#253eaf] backdrop-blur-lg">
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
               <span className="absolute -top-10 left-10 size-36 rounded-full bg-sky-100/45 blur-3xl" />
               <span className="absolute right-0 top-24 size-28 rounded-full bg-cyan-100/35 blur-3xl animate-float" style={{ animationDelay: '-2.5s' }} />
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-cyan-100 bg-[linear-gradient(130deg,rgba(224,247,255,0.75),rgba(255,255,255,0.84))] px-5 py-3">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#dbe3ff] bg-[linear-gradient(130deg,rgba(37,62,175,0.1),rgba(240,128,40,0.08))] px-5 py-3">
               <h2 className="font-sora flex items-center gap-2 text-[1.45rem] font-semibold text-slate-800">
+                <LabelIcon type="activity" />
                 <span>Lead Activities</span>
               </h2>
               <div className="relative flex items-center gap-2">
@@ -483,18 +833,19 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsAddLeadOpen(true)}
-                  className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-[#5e63b8] transition hover:bg-slate-50"
-                >
-                  Add Lead
-                </button>
-                <button
-                  type="button"
                   onClick={() => setShowFilterMenu((prev) => !prev)}
                   aria-label="Filter leads"
                   className="grid size-10 place-items-center rounded-md border border-slate-300 bg-white text-[#5e63b8] transition hover:bg-slate-50"
                 >
                   <FilterIcon />
+                </button>
+                <button
+                  type="button"
+                  onClick={closeActiveTab}
+                  className="grid size-10 place-items-center rounded-md border border-slate-300 bg-white text-lg font-bold text-slate-700 transition hover:bg-slate-50"
+                  aria-label="Close lead activities tab"
+                >
+                  {'\u00D7'}
                 </button>
 
                 {showFilterMenu && (
@@ -547,7 +898,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
             <div className="relative overflow-x-auto overflow-y-visible p-4">
               <table className="w-full table-fixed text-[13px]">
                 <thead>
-                  <tr className="bg-gradient-to-r from-[#5868ea] to-[#9155e6] text-left text-[0.72rem] uppercase tracking-[0.04em] text-white">
+                  <tr className="bg-gradient-to-r from-[#253eaf] to-[#f08028] text-left text-[0.72rem] uppercase tracking-[0.04em] text-white">
                     <th className="w-[19%] px-2 py-2.5 align-middle">Name/Email/Phone</th>
                     <th className="w-[10%] px-2 py-2.5 align-middle">Sell Do Lead ID</th>
                     <th className="w-[8%] px-2 py-2.5 align-middle">Project</th>
@@ -638,6 +989,219 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
           </section>
         )}
 
+        {activeView === 'emails' && (
+          <section className="animate-rise relative isolate overflow-hidden rounded-2xl border border-[#c7d2fe] bg-[linear-gradient(150deg,rgba(255,255,255,0.94),rgba(237,242,255,0.88))] shadow-[0_24px_58px_-38px_#253eaf] backdrop-blur-lg">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+              <span className="absolute -left-8 top-4 size-40 rounded-full bg-indigo-100/45 blur-3xl animate-float" />
+              <span className="absolute right-8 bottom-0 size-36 rounded-full bg-orange-100/35 blur-3xl animate-float" style={{ animationDelay: '-2.2s' }} />
+            </div>
+
+            <div className="flex items-center justify-between border-b border-[#dbe3ff] bg-gradient-to-r from-[#253eaf] to-[#f08028] px-5 py-3 text-white">
+              <h2 className="font-sora inline-flex items-center gap-2 text-[1.45rem] font-semibold">
+                <LabelIcon type="email" />
+                <span>Emails</span>
+              </h2>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowFilterMenu((prev) => !prev)}
+                  aria-label="Filter emails"
+                  className="grid size-8 place-items-center rounded-md bg-white/20 text-white transition hover:bg-white/30"
+                >
+                  <FilterIcon />
+                </button>
+                <button
+                  type="button"
+                  onClick={closeActiveTab}
+                  className="grid size-8 place-items-center rounded-md bg-white/20 text-2xl font-bold leading-none text-white transition hover:bg-white/30"
+                  aria-label="Close emails tab"
+                >
+                  {'\u00D7'}
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4 md:p-5">
+              <div className="overflow-x-auto rounded-xl border border-[#dbe3ff] bg-white/95 shadow-[0_16px_36px_-30px_#253eaf]">
+                <table className="w-full min-w-[760px] border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-[#253eaf] to-[#f08028] text-left text-white">
+                      <th className="px-3 py-2.5">To</th>
+                      <th className="px-3 py-2.5">Subject</th>
+                      <th className="px-3 py-2.5">Status</th>
+                      <th className="px-3 py-2.5">Sent On</th>
+                      <th className="px-3 py-2.5 text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {emailRows.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="px-3 py-7 text-center text-slate-500">
+                          No emails available.
+                        </td>
+                      </tr>
+                    )}
+                    {emailRows.map((row, index) => (
+                      <tr
+                        key={row.id}
+                        className="animate-fade-slide border-b border-slate-100 text-slate-700"
+                        style={{ animationDelay: `${index * 80}ms` }}
+                      >
+                        <td className="max-w-[260px] truncate px-3 py-2.5 font-medium text-sky-700" />
+                        <td className="max-w-[260px] truncate px-3 py-2.5 font-semibold text-indigo-700" />
+                        <td className="px-3 py-2.5" />
+                        <td className="px-3 py-2.5" />
+                        <td className="px-3 py-2.5" />
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {activeView === 'sms' && (
+          <section className="animate-rise relative isolate overflow-hidden rounded-2xl border border-[#c7d2fe] bg-[linear-gradient(150deg,rgba(255,255,255,0.94),rgba(237,242,255,0.88))] p-5 shadow-[0_24px_58px_-38px_#253eaf] backdrop-blur-lg">
+            <div className="flex items-center justify-between">
+              <h2 className="font-sora inline-flex items-center gap-2 text-[1.4rem] font-semibold text-slate-800">
+                <LabelIcon type="sms" />
+                <span>Sms</span>
+              </h2>
+              <button
+                type="button"
+                onClick={closeActiveTab}
+                className="grid size-8 place-items-center rounded-md border border-slate-300 bg-white text-2xl font-bold leading-none text-slate-700 transition hover:bg-slate-50"
+                aria-label="Close sms tab"
+              >
+                {'\u00D7'}
+              </button>
+            </div>
+          </section>
+        )}
+
+        {activeView === 'update-document' && (
+          <section className="animate-rise relative isolate overflow-hidden rounded-2xl border border-[#c7d2fe] bg-[linear-gradient(150deg,rgba(255,255,255,0.94),rgba(237,242,255,0.88))] shadow-[0_24px_58px_-38px_#253eaf] backdrop-blur-lg">
+            <div className="flex items-center justify-between border-b border-[#dbe3ff] bg-gradient-to-r from-[#253eaf] to-[#f08028] px-5 py-3 text-white">
+              <h2 className="font-sora inline-flex items-center gap-2 text-[1.45rem] font-semibold">
+                <LabelIcon type="docs" />
+                <span>Update Documents</span>
+              </h2>
+              <button
+                type="button"
+                onClick={closeActiveTab}
+                className="grid size-8 place-items-center rounded-md bg-white/20 text-2xl font-bold leading-none text-white transition hover:bg-white/30"
+                aria-label="Close update document tab"
+              >
+                {'\u00D7'}
+              </button>
+            </div>
+
+            <div className="space-y-4 p-4 md:p-5">
+              <div className="grid gap-2 md:grid-cols-[1fr_auto]">
+                <select
+                  value={selectedDocumentType}
+                  onChange={(e) => setSelectedDocumentType(e.target.value)}
+                  className="rounded-lg border border-[#c7d2fe] bg-white px-3 py-2.5 text-sm font-semibold text-slate-700 outline-none transition focus:border-[#7f95e8] focus:ring-3 focus:ring-[#e4ebff]"
+                >
+                  {documentTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => documentInputRef.current?.click()}
+                  className="rounded-lg bg-gradient-to-r from-[#253eaf] to-[#f08028] px-5 py-2.5 text-sm font-bold text-white shadow-[0_16px_30px_-20px_#253eaf] transition hover:-translate-y-0.5"
+                >
+                  Upload
+                </button>
+                <input
+                  ref={documentInputRef}
+                  type="file"
+                  multiple
+                  accept=".jpg,.jpeg,.png,.pdf"
+                  onChange={handleDocumentUpload}
+                  className="hidden"
+                />
+              </div>
+
+              <p className="text-sm text-slate-600">Upload documents in formats - jpg, jpeg, png, pdf</p>
+              <div className="text-sm text-slate-700">
+                <p className="font-semibold">
+                  Valid documents for <span className="text-[#253eaf]">{selectedDocumentType}</span> -
+                </p>
+                <ul className="ml-5 mt-1 list-disc">
+                  {validForSelectedDocument.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="space-y-2.5">
+                {documentTypes.map((type, index) => {
+                  const files = uploadedDocuments[type] ?? []
+                  return (
+                    <div
+                      key={type}
+                      className="animate-fade-slide overflow-hidden rounded-xl border border-[#dbe3ff] bg-white shadow-[0_16px_36px_-30px_#253eaf]"
+                      style={{ animationDelay: `${index * 70}ms` }}
+                    >
+                      <div className="flex items-center justify-between border-b border-[#dbe3ff] bg-gradient-to-r from-[#eef3ff] to-[#fff2e6] px-4 py-2.5">
+                        <h3 className="text-lg font-bold text-slate-700">{type}</h3>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteDocumentType(type)}
+                          className="grid size-7 place-items-center rounded-md border border-[#c7d2fe] bg-white text-[#253eaf] transition hover:bg-[#eef3ff]"
+                          aria-label={`Delete ${type} uploads`}
+                        >
+                          <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 6h18M8 6V4h8v2M7 6l1 14h8l1-14" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M10 10v6M14 10v6" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="min-h-[120px] px-4 py-4">
+                        {files.length === 0 ? (
+                          <p className="text-sm text-slate-500">No file uploaded.</p>
+                        ) : (
+                          <ul className="grid gap-2 sm:grid-cols-2">
+                            {files.map((file) => (
+                              <li
+                                key={`${type}-${file.name}-${file.lastModified}`}
+                                className="flex items-center gap-2 rounded-lg border border-[#dbe3ff] bg-[#eef3ff]/65 px-3 py-2 text-sm text-slate-700"
+                              >
+                                <span
+                                  className="inline-grid size-5 place-items-center rounded-sm border border-[#c7d2fe] bg-white text-[10px] font-bold text-[#253eaf]"
+                                  aria-hidden="true"
+                                >
+                                  F
+                                </span>
+                                <span className="truncate">{file.name}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={handleSaveDocuments}
+                  className="rounded-lg bg-gradient-to-r from-[#253eaf] to-[#f08028] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_16px_30px_-20px_#253eaf] transition hover:-translate-y-0.5"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
+
         {activeView === 'customer-detail' && selectedLead && (
           <section className="animate-rise relative isolate space-y-5">
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
@@ -645,9 +1209,12 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
               <span className="absolute right-10 top-8 size-28 rounded-full bg-amber-100/45 blur-3xl animate-float" style={{ animationDelay: '-3.1s' }} />
             </div>
 
-            <div className="relative z-[120] overflow-visible rounded-2xl border border-emerald-200/70 bg-[linear-gradient(150deg,rgba(255,255,255,0.9),rgba(236,253,245,0.84))] px-5 py-4 shadow-[0_24px_58px_-38px_#059669] backdrop-blur-lg">
+            <div className="relative z-[120] overflow-visible rounded-2xl border border-[#c7d2fe] bg-[linear-gradient(150deg,rgba(255,255,255,0.9),rgba(237,242,255,0.88))] px-5 py-4 shadow-[0_24px_58px_-38px_#253eaf] backdrop-blur-lg">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="font-sora text-[1.5rem] font-semibold text-slate-800">Customer Detail</h2>
+                <h2 className="font-sora inline-flex items-center gap-2 text-[1.5rem] font-semibold text-slate-800">
+                  <LabelIcon type="welcome" />
+                  <span>Customer Detail</span>
+                </h2>
                 <div data-dots-menu-root="true" className="relative z-[80] flex items-center gap-2">
                   <button
                     type="button"
@@ -686,6 +1253,14 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
                       </button>
                     </div>
                   )}
+                  <button
+                    type="button"
+                    onClick={closeActiveTab}
+                    className="grid size-8 place-items-center rounded-md border border-slate-300 bg-white text-2xl font-bold leading-none text-slate-700 transition hover:bg-slate-50"
+                    aria-label="Close customer detail tab"
+                  >
+                    {'\u00D7'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -888,6 +1463,143 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
         )}
       </main>
 
+      {isProfileModalOpen && (
+        <div className="fixed inset-0 z-[260] grid place-items-center bg-slate-900/35 px-3">
+          <div className="w-full max-w-[560px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_28px_60px_-35px_#0f172a] animate-rise">
+            <div className="flex items-center justify-between bg-gradient-to-r from-[#253eaf] to-[#f08028] px-4 py-3 text-white">
+              <h3 className="font-sora text-lg font-semibold">Channel Partner Profile</h3>
+              <button
+                type="button"
+                onClick={() => setIsProfileModalOpen(false)}
+                className="grid size-8 place-items-center rounded-md text-2xl leading-none text-white/95 transition hover:bg-white/20"
+                aria-label="Close profile form"
+              >
+                {'\u00D7'}
+              </button>
+            </div>
+            <form onSubmit={handleSaveProfile} autoComplete="off" className="grid gap-3 p-4 md:grid-cols-2">
+              <label className="grid gap-1">
+                <span className="text-sm font-semibold text-slate-700">Name</span>
+                <input
+                  name="name"
+                  value={profileForm.name}
+                  onChange={handleProfileFormChange}
+                  required
+                  autoComplete="off"
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                />
+              </label>
+              <label className="grid gap-1">
+                <span className="text-sm font-semibold text-slate-700">Email</span>
+                <input
+                  type="email"
+                  name="email"
+                  value={profileForm.email}
+                  onChange={handleProfileFormChange}
+                  required
+                  autoComplete="off"
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                />
+              </label>
+              <label className="grid gap-1">
+                <span className="text-sm font-semibold text-slate-700">Phone</span>
+                <input
+                  name="phone"
+                  value={profileForm.phone}
+                  onChange={handleProfileFormChange}
+                  required
+                  autoComplete="off"
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                />
+              </label>
+              <label className="grid gap-1">
+                <span className="text-sm font-semibold text-slate-700">RERA Registration Number</span>
+                <input
+                  name="reraNumber"
+                  value={profileForm.reraNumber}
+                  onChange={handleProfileFormChange}
+                  required
+                  autoComplete="off"
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                />
+              </label>
+              <label className="grid gap-1 md:col-span-2">
+                <span className="text-sm font-semibold text-slate-700">User Time Zone</span>
+                <select
+                  name="timeZone"
+                  value={profileForm.timeZone}
+                  onChange={handleProfileFormChange}
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                >
+                  <option value="Asia/Kolkata">Asia/Kolkata</option>
+                  <option value="Asia/Dubai">Asia/Dubai</option>
+                  <option value="Europe/London">Europe/London</option>
+                  <option value="America/New_York">America/New_York</option>
+                </select>
+              </label>
+              <div className="md:col-span-2 flex justify-end">
+                <button
+                  type="submit"
+                  className="rounded-md bg-brand-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1f37a2]"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isPasswordModalOpen && (
+        <div className="fixed inset-0 z-[260] grid place-items-center bg-slate-900/35 px-3">
+          <div className="w-full max-w-[460px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_28px_60px_-35px_#0f172a] animate-rise">
+            <div className="flex items-center justify-between bg-gradient-to-r from-[#253eaf] to-[#f08028] px-4 py-3 text-white">
+              <h3 className="font-sora text-lg font-semibold">Change Password</h3>
+              <button
+                type="button"
+                onClick={() => setIsPasswordModalOpen(false)}
+                className="grid size-8 place-items-center rounded-md text-2xl leading-none text-white/95 transition hover:bg-white/20"
+                aria-label="Close change password form"
+              >
+                {'\u00D7'}
+              </button>
+            </div>
+            <form onSubmit={handleChangePassword} className="grid gap-3 p-4">
+              <label className="grid gap-1">
+                <span className="text-sm font-semibold text-slate-700">New Password</span>
+                <input
+                  type="password"
+                  name="newPassword"
+                  value={passwordForm.newPassword}
+                  onChange={handlePasswordFormChange}
+                  required
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                />
+              </label>
+              <label className="grid gap-1">
+                <span className="text-sm font-semibold text-slate-700">Confirm Password</span>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={passwordForm.confirmPassword}
+                  onChange={handlePasswordFormChange}
+                  required
+                  className="rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100"
+                />
+              </label>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="rounded-md bg-brand-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1f37a2]"
+                >
+                  Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {isFollowUpDrawerOpen && (
         <div className="fixed right-4 top-20 z-[60] w-[min(94vw,430px)] rounded-xl border border-slate-200 bg-white shadow-[0_28px_60px_-35px_#0f172a] animate-rise">
           <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
@@ -979,7 +1691,7 @@ function About({ onOpenApplicationForm, onBackToLogin }) {
       )}
 
       {toastMessage && (
-        <div className="fixed right-4 top-5 z-[70] rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
+        <div className="fixed right-4 top-5 z-[320] rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-lg">
           {toastMessage}
         </div>
       )}
